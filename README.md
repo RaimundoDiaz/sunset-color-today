@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sunset
 
-## Getting Started
+Web app that **predicts sunset color** and shows a **live sky** driven by solar position and atmospheric conditions. Built with [Next.js](https://nextjs.org) (App Router) and TypeScript.
 
-First, run the development server:
+## How it works (overview)
+
+Colors are not picked from a fixed palette. A **spectral model** approximates how sunlight passes through the atmosphere, accounting in simplified form for **Rayleigh scattering**, **aerosols** (dust, haze), and **ozone absorption**, among other effects. The spectrum is turned into an on-screen color using **CIE 1931 color-matching functions**—the same idea as in colorimetry and imaging.
+
+For **prediction**, that physical core is combined with weather at sunset time: cloud layers, humidity, visibility, air quality (AOD, particles), and when available **column ozone and water vapor** from satellite-based products. **Heuristics** capture effects such as high clouds acting as a “canvas” versus heavy overcast washing colors out.
+
+The **live** view adjusts to **current solar elevation**: day, golden hour, twilight, and night are handled as distinct regimes, blending the spectral model with transitions toward daytime blue or twilight tones.
+
+**UI language:** copy is available in **English** and **Spanish** (via `translations.ts`). The active locale follows the browser language when possible (`es*` → Spanish, otherwise English). Code comments, identifiers, and this README stay in English.
+
+## External data
+
+Data comes from public APIs (no client-side API key in the typical setup):
+
+- **Open-Meteo** — weather, clouds, visibility, radiation, etc.
+- **Open-Meteo Air Quality** — aerosols and related pollutants.
+- **NASA POWER** — total column ozone and water vapor when the service responds in time; otherwise estimates are used.
+- Optionally **ECMWF via Open-Meteo** for finer water vapor.
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other useful commands:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build    # production build
+npm run test:run # tests (Vitest)
+```
 
-## Learn More
+## Deploy
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Any Node.js host that supports Next.js works; [Vercel](https://vercel.com) is a common choice. See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for details.

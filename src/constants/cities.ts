@@ -1,0 +1,40 @@
+import type { City } from "@/types";
+
+export const CITIES: Record<string, City> = {
+  santiago:        { name: "Santiago",         lat: -33.4489, lon: -70.6693, tz: "America/Santiago" },
+  buenosaires:     { name: "Buenos Aires",     lat: -34.6037, lon: -58.3816, tz: "America/Argentina/Buenos_Aires" },
+  lima:            { name: "Lima",              lat: -12.0464, lon: -77.0428, tz: "America/Lima" },
+  bogota:          { name: "Bogota",            lat: 4.7110,  lon: -74.0721, tz: "America/Bogota" },
+  saopaulo:        { name: "Sao Paulo",         lat: -23.5505, lon: -46.6333, tz: "America/Sao_Paulo" },
+  riodejaneiro:    { name: "Rio de Janeiro",    lat: -22.9068, lon: -43.1729, tz: "America/Sao_Paulo" },
+  montevideo:      { name: "Montevideo",        lat: -34.9011, lon: -56.1645, tz: "America/Montevideo" },
+  quito:           { name: "Quito",             lat: -0.1807,  lon: -78.4678, tz: "America/Guayaquil" },
+  nuevayork:       { name: "New York",          lat: 40.7128,  lon: -74.0060, tz: "America/New_York" },
+  losangeles:      { name: "Los Angeles",       lat: 34.0522,  lon: -118.2437, tz: "America/Los_Angeles" },
+  miami:           { name: "Miami",             lat: 25.7617,  lon: -80.1918, tz: "America/New_York" },
+  ciudaddemexico:  { name: "Mexico City",       lat: 19.4326,  lon: -99.1332, tz: "America/Mexico_City" },
+  toronto:         { name: "Toronto",           lat: 43.6532,  lon: -79.3832, tz: "America/Toronto" },
+  madrid:          { name: "Madrid",            lat: 40.4168,  lon: -3.7038,  tz: "Europe/Madrid" },
+  barcelona:       { name: "Barcelona",         lat: 41.3874,  lon: 2.1686,   tz: "Europe/Madrid" },
+  paris:           { name: "Paris",             lat: 48.8566,  lon: 2.3522,   tz: "Europe/Paris" },
+  londres:         { name: "London",            lat: 51.5074,  lon: -0.1278,  tz: "Europe/London" },
+  roma:            { name: "Rome",              lat: 41.9028,  lon: 12.4964,  tz: "Europe/Rome" },
+  berlin:          { name: "Berlin",            lat: 52.5200,  lon: 13.4050,  tz: "Europe/Berlin" },
+  amsterdam:       { name: "Amsterdam",         lat: 52.3676,  lon: 4.9041,   tz: "Europe/Amsterdam" },
+  tokio:           { name: "Tokyo",             lat: 35.6762,  lon: 139.6503, tz: "Asia/Tokyo" },
+  bangkok:         { name: "Bangkok",           lat: 13.7563,  lon: 100.5018, tz: "Asia/Bangkok" },
+  dubai:           { name: "Dubai",             lat: 25.2048,  lon: 55.2708,  tz: "Asia/Dubai" },
+  sydney:          { name: "Sydney",            lat: -33.8688, lon: 151.2093, tz: "Australia/Sydney" },
+  mumbai:          { name: "Mumbai",            lat: 19.0760,  lon: 72.8777,  tz: "Asia/Kolkata" },
+  cairo:           { name: "Cairo",             lat: 30.0444,  lon: 31.2357,  tz: "Africa/Cairo" },
+  ciudaddelcabo:   { name: "Cape Town",         lat: -33.9249, lon: 18.4241,  tz: "Africa/Johannesburg" },
+  nairobi:         { name: "Nairobi",           lat: -1.2921,  lon: 36.8219,  tz: "Africa/Nairobi" },
+};
+
+export const CITY_REGIONS: { label: string; cities: string[] }[] = [
+  { label: "South America", cities: ["santiago", "buenosaires", "lima", "bogota", "saopaulo", "riodejaneiro", "montevideo", "quito"] },
+  { label: "North America", cities: ["nuevayork", "losangeles", "miami", "ciudaddemexico", "toronto"] },
+  { label: "Europe", cities: ["madrid", "barcelona", "paris", "londres", "roma", "berlin", "amsterdam"] },
+  { label: "Asia & Oceania", cities: ["tokio", "bangkok", "dubai", "sydney", "mumbai"] },
+  { label: "Africa", cities: ["cairo", "ciudaddelcabo", "nairobi"] },
+];
