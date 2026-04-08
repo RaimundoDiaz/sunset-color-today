@@ -25,6 +25,9 @@ interface SunsetStore {
 
   atmosphericData: AtmosphericData | null;
   setAtmosphericData: (d: AtmosphericData) => void;
+
+  showWeatherDetail: boolean;
+  toggleWeatherDetail: () => void;
 }
 
 const DEFAULT_LOCATION: LocationData = {
@@ -48,6 +51,9 @@ export const useSunsetStore = create<SunsetStore>((set) => ({
 
   atmosphericData: null,
   setAtmosphericData: (atmosphericData) => set({ atmosphericData }),
+
+  showWeatherDetail: false,
+  toggleWeatherDetail: () => set((s) => ({ showWeatherDetail: !s.showWeatherDetail })),
 }));
 
 export function initLocale() {

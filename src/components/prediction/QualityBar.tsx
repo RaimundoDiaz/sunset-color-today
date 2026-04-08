@@ -18,8 +18,8 @@ export function QualityBar({ quality }: { quality: number }) {
 
   return (
     <div className="flex items-center gap-3 mb-5 text-sm">
-      <span className="text-black/45 text-xs font-light whitespace-nowrap">{t("quality")}</span>
-      <div className="flex-1 h-1 bg-black/[0.08] rounded-full overflow-hidden">
+      <span className="text-white/50 text-xs font-light whitespace-nowrap">{t("quality")}</span>
+      <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
         <motion.div
           className="h-full rounded-full"
           initial={{ width: "0%" }}
@@ -27,7 +27,7 @@ export function QualityBar({ quality }: { quality: number }) {
           transition={{ duration: 1.5, ease: "easeOut" }}
         />
       </div>
-      <span className="font-medium text-xs text-black/60 min-w-[90px] text-right">
+      <span className="font-medium text-xs text-white/70 min-w-[90px] text-right">
         {quality}/100 — {t(level.key)}
       </span>
     </div>

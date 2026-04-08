@@ -35,24 +35,24 @@
 }
 
 :root {
-  --background: #e6e6e6;
-  --foreground: rgba(0, 0, 0, 0.85);
-  --card: rgba(255, 255, 255, 0.5);
-  --card-foreground: rgba(0, 0, 0, 0.85);
-  --popover: #ffffff;
-  --popover-foreground: rgba(0, 0, 0, 0.85);
-  --primary: rgba(0, 0, 0, 0.85);
-  --primary-foreground: #e6e6e6;
-  --secondary: rgba(0, 0, 0, 0.06);
-  --secondary-foreground: rgba(0, 0, 0, 0.85);
-  --muted: rgba(0, 0, 0, 0.06);
-  --muted-foreground: rgba(0, 0, 0, 0.5);
-  --accent: rgba(0, 0, 0, 0.06);
-  --accent-foreground: rgba(0, 0, 0, 0.85);
+  --background: #000000;
+  --foreground: rgba(255, 255, 255, 0.95);
+  --card: rgba(255, 255, 255, 0.1);
+  --card-foreground: rgba(255, 255, 255, 0.9);
+  --popover: rgba(0, 0, 0, 0.8);
+  --popover-foreground: rgba(255, 255, 255, 0.9);
+  --primary: rgba(255, 255, 255, 0.95);
+  --primary-foreground: #000000;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: rgba(255, 255, 255, 0.9);
+  --muted: rgba(255, 255, 255, 0.08);
+  --muted-foreground: rgba(255, 255, 255, 0.5);
+  --accent: rgba(255, 255, 255, 0.08);
+  --accent-foreground: rgba(255, 255, 255, 0.9);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: rgba(0, 0, 0, 0.12);
-  --input: rgba(0, 0, 0, 0.08);
-  --ring: rgba(0, 0, 0, 0.2);
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: rgba(255, 255, 255, 0.2);
   --radius: 0.75rem;
 }
 
@@ -61,6 +61,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-[#e6e6e6] text-foreground font-sans;
+    @apply bg-black text-foreground font-sans;
   }
 }

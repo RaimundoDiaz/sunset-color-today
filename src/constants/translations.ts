@@ -30,6 +30,9 @@ export const translations = {
     qualityPoor: "Poor",
     copy: "Copy",
     copied: "Copied!",
+    peakColor: "Peak Color",
+    seeShapes: "See what shapes this sunset \u2192",
+    hideDetails: "Hide details",
 
     // Weather cards
     temperature: "Temperature",
@@ -138,6 +141,9 @@ export const translations = {
     qualityPoor: "Pobre",
     copy: "Copiar",
     copied: "¡Copiado!",
+    peakColor: "Color pico",
+    seeShapes: "Ver qué forma este atardecer \u2192",
+    hideDetails: "Ocultar detalles",
 
     temperature: "Temperatura",
     humidity: "Humedad",
