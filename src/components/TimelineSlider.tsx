@@ -32,14 +32,14 @@ export function TimelineSlider({ timeline, sunsetTime }: TimelineSliderProps) {
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 w-[80vw] max-w-[900px] hidden md:block">
       {/* Time label */}
-      <motion.p
+      {/* <motion.p
         className="text-center text-white font-semibold text-[20px] mb-3"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 0.6 }}
       >
         {timeLabel}
-      </motion.p>
+      </motion.p> */}
 
       {/* Color bar */}
       <motion.div

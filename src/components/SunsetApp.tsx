@@ -11,7 +11,7 @@ import { useT } from "@/hooks/useTranslation";
 import { dateTimeLocale } from "@/lib/locale-format";
 import { AtmosphericBackground } from "./AtmosphericBackground";
 import { TimelineSlider } from "./TimelineSlider";
-import { WeatherWidget } from "./WeatherWidget";
+import { WeatherWidget, MobileWeatherWidget } from "./WeatherWidget";
 import { LocationSearch } from "./shared/LocationSearch";
 import { Footer } from "./shared/Footer";
 import { ErrorBanner } from "./shared/ErrorBanner";
@@ -102,12 +102,122 @@ export function SunsetApp() {
         isLoading={isLoading && !prediction}
       />
 
-      {/* Layer 1: Hero section — top left */}
-      <div className="absolute top-0 left-0 z-10 flex flex-col justify-between min-h-dvh pl-[60px] pt-[60px] pb-[60px] max-sm:pl-6 max-sm:pt-10 max-sm:pb-6 max-sm:pr-6 max-sm:relative max-sm:min-h-0">
-        <div className="flex flex-col gap-6 items-start max-w-[300px] max-sm:max-w-full">
-          {/* Title */}
+      {/* Layer 1: Mobile layout — flex row with hero + optional widget column */}
+      <div className="absolute inset-0 z-10 flex px-6 pt-10 pb-5 md:hidden">
+        <div className="flex flex-1 flex-col justify-between min-w-0">
+          <div className="flex flex-col gap-6 items-start">
+            <motion.h1
+              className="text-[16px] font-medium uppercase text-white"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+            >
+              {t("title")}
+            </motion.h1>
+
+            <motion.div
+              className="w-full"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <LocationSearch />
+            </motion.div>
+
+            <motion.div
+              className="flex flex-col gap-2 text-[14px] font-light text-white"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+            >
+              <p>{dateStr}</p>
+              <p>
+                {t("sunset")}{" "}
+                <span className="font-semibold">{sunsetTime}</span>
+              </p>
+              {prediction && (
+                <p>
+                  {t("peakLight")} {sunsetTime} — {peakEndTime}
+                </p>
+              )}
+            </motion.div>
+
+            {isReady && prediction && (
+              <motion.div
+                className="flex flex-col gap-2"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <p className="text-[12px] text-white tracking-[-0.4px]">{t("peakColor")}</p>
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-[30px] h-[30px] rounded-full shrink-0"
+                    style={{ backgroundColor: prediction.peak.hex }}
+                  />
+                  <span className="text-[14px] font-semibold text-white">{prediction.peak.hex}</span>
+                </div>
+              </motion.div>
+            )}
+
+            {isReady && prediction && (
+              <motion.button
+                onClick={toggleWeatherDetail}
+                className="bg-white/10 border-[0.5px] border-white/60 rounded-full px-6 py-1 h-[32px] text-[12px] font-medium text-white hover:bg-white/15 overflow-hidden"
+                layout
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6, layout: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={showWeatherDetail ? "hide" : "show"}
+                    className="block whitespace-nowrap"
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {showWeatherDetail ? `\u2190 ${t("hideDetails")}` : t("seeShapes")}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.button>
+            )}
+
+            <ErrorBanner warnings={warnings} />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            <Footer updateTime={updateTime} />
+          </motion.div>
+        </div>
+
+        {/* Mobile widget column */}
+        <AnimatePresence>
+          {showWeatherDetail && isReady && prediction && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <MobileWeatherWidget data={prediction.weatherData} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Layer 1: Desktop layout — hero pinned top-left */}
+      <div className="absolute top-0 left-0 z-10 hidden md:flex flex-col justify-between min-h-dvh pl-[60px] pt-[60px] pb-[60px]">
+        <div className="flex flex-col gap-6 items-start max-w-[300px]">
           <motion.h1
-            className="text-[20px] font-medium uppercase text-white max-sm:text-[16px]"
+            className="text-[20px] font-medium uppercase text-white"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
@@ -115,9 +225,8 @@ export function SunsetApp() {
             {t("title")}
           </motion.h1>
 
-          {/* Location search */}
           <motion.div
-            className="w-[300px] max-sm:w-full"
+            className="w-[300px]"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -125,7 +234,6 @@ export function SunsetApp() {
             <LocationSearch />
           </motion.div>
 
-          {/* Date & sunset info */}
           <motion.div
             className="flex flex-col gap-2 text-[14px] font-light text-white"
             initial={{ opacity: 0 }}
@@ -144,7 +252,6 @@ export function SunsetApp() {
             )}
           </motion.div>
 
-          {/* Peak color */}
           {isReady && prediction && (
             <motion.div
               className="flex flex-col gap-2"
@@ -163,35 +270,45 @@ export function SunsetApp() {
             </motion.div>
           )}
 
-          {/* Toggle details button */}
           {isReady && prediction && (
             <motion.button
               onClick={toggleWeatherDetail}
-              className="border border-white/[0.6] rounded-full px-6 py-1 text-[12px] font-medium text-white hover:bg-white/10 transition-colors"
+              className="border-[0.5px] border-white/60 rounded-full px-6 py-1 h-[30px] text-[12px] font-medium text-white hover:bg-white/10 overflow-hidden"
+              layout
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 0.5, delay: 0.6, layout: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }}
+              whileTap={{ scale: 0.97 }}
             >
-              {showWeatherDetail ? `\u2190 ${t("hideDetails")}` : t("seeShapes")}
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={showWeatherDetail ? "hide" : "show"}
+                  className="block whitespace-nowrap"
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  {showWeatherDetail ? `\u2190 ${t("hideDetails")}` : t("seeShapes")}
+                </motion.span>
+              </AnimatePresence>
             </motion.button>
           )}
 
-          {/* Error warnings */}
           <ErrorBanner warnings={warnings} />
         </div>
 
-        {/* Footer — bottom left */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="max-sm:mt-8"
         >
           <Footer updateTime={updateTime} />
         </motion.div>
       </div>
 
-      {/* Layer 2: Weather widget — top right (desktop only) */}
+      {/* Layer 2: Desktop weather widget — top right */}
       <AnimatePresence>
         {showWeatherDetail && isReady && prediction && (
           <motion.div
