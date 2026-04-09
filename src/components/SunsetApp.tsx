@@ -46,7 +46,7 @@ export function SunsetApp() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.lang = locale === "es" ? "es" : "en";
+    document.documentElement.lang = locale;
   }, [locale]);
 
   const { weather, air, power, ecmwf, isLoading, isError, warnings } =

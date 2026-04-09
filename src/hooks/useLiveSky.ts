@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { formatInTimeZone } from "date-fns-tz";
-import { enUS, es } from "date-fns/locale";
+import { enUS, es, ptBR, fr, de, it, ja } from "date-fns/locale";
 import { t as tr } from "@/constants/translations";
 import type { LocationData } from "@/store/useSunsetStore";
 import { solarElevation } from "@/lib/solar";
@@ -28,7 +28,8 @@ export function useLiveSky(loc: LocationData, sunsetIso?: string, sunriseIso?: s
 
   const tick = useCallback(() => {
     const now = new Date();
-    const dateFnsLocale = locale === "es" ? es : enUS;
+    const dateFnsMap = { en: enUS, es, pt: ptBR, fr, de, it, ja } as const;
+    const dateFnsLocale = dateFnsMap[locale] ?? enUS;
     const timeStr = formatInTimeZone(now, loc.tz, "HH:mm:ss", { locale: dateFnsLocale });
     const dateStr = formatInTimeZone(now, loc.tz, "EEEE, d MMMM yyyy", { locale: dateFnsLocale });
 
