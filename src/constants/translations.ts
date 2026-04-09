@@ -79,6 +79,10 @@ export const translations = {
     footerData: "Data: Open-Meteo API \u00B7 Updated:",
     footerModel: "Spectral model v2 \u00B7 Rayleigh + Mie + Chappuis + CIE 1931",
 
+    // Misc
+    noResults: "No results found",
+    estimated: "estimated",
+
     // Errors
     loadingData: "Loading data...",
     errorConnect: "Connection error",
@@ -185,6 +189,9 @@ export const translations = {
 
     footerData: "Datos: Open-Meteo API \u00B7 Actualizado:",
     footerModel: "Modelo espectral v2 \u00B7 Rayleigh + Mie + Chappuis + CIE 1931",
+
+    noResults: "Sin resultados",
+    estimated: "estimado",
 
     loadingData: "Obteniendo datos...",
     errorConnect: "Error al conectar",

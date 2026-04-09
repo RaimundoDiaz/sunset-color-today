@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSunsetStore, type LocationData } from "@/store/useSunsetStore";
+import { t } from "@/constants/translations";
 
 interface GeoResult {
   id: number;
@@ -144,7 +145,7 @@ export function LocationSearch() {
       {isOpen && query.length >= 2 && results.length === 0 && !isSearching && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-black/70 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg p-4 z-50">
           <p className="text-sm text-white/40 text-center">
-            {locale === "es" ? "Sin resultados" : "No results found"}
+            {t(locale, "noResults")}
           </p>
         </div>
       )}

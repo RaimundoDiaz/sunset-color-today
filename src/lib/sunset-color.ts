@@ -86,7 +86,7 @@ export function calculateSunsetColor(
     ozoneSource = "NASA POWER/GMAO";
   } else {
     ozoneDU = estimateOzoneDU(uvMax, Math.abs(lat));
-    ozoneSource = locale === "es" ? "estimado" : "estimated";
+    ozoneSource = tr(locale, "estimated");
   }
 
   const columnWV = ecmwfWV ?? extractPowerWaterVapor(power) ?? (humidity * 0.45);
@@ -270,8 +270,7 @@ export function calculateSunsetColor(
   const hex = rgbToHex(r, g, b);
 
   // ── 8. Technical summary ──
-  const wvEstimated = locale === "es" ? "estimado" : "estimated";
-  const wvSrc = ecmwfWV != null ? "ECMWF" : (extractPowerWaterVapor(power) ? "NASA POWER" : wvEstimated);
+  const wvSrc = ecmwfWV != null ? "ECMWF" : (extractPowerWaterVapor(power) ? "NASA POWER" : tr(locale, "estimated"));
   factors.push(
     `${tr(locale, "factorTechnical", {
       am: "0",
