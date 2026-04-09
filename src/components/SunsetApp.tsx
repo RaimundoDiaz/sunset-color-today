@@ -103,7 +103,7 @@ export function SunsetApp() {
       />
 
       {/* Layer 1: Mobile layout — flex row with hero + optional widget column */}
-      <div className="absolute inset-0 z-10 flex px-6 pt-10 pb-5 md:hidden">
+      <div className="absolute inset-0 z-10 flex gap-8 px-6 pt-10 pb-5 md:hidden">
         <div className="flex flex-1 flex-col justify-between min-w-0">
           <div className="flex flex-col gap-6 items-start">
             <motion.h1
@@ -117,9 +117,10 @@ export function SunsetApp() {
 
             <motion.div
               className="w-full"
+              layout
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.2, layout: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }}
             >
               <LocationSearch />
             </motion.div>
@@ -199,13 +200,14 @@ export function SunsetApp() {
         </div>
 
         {/* Mobile widget column */}
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {showWeatherDetail && isReady && prediction && (
             <motion.div
+              layout
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              transition={{ duration: 0.4, ease: "easeOut", layout: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }}
             >
               <MobileWeatherWidget data={prediction.weatherData} />
             </motion.div>

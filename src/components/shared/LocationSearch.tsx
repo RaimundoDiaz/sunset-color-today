@@ -89,7 +89,7 @@ export function LocationSearch() {
         placeholder={displayName}
         onChange={(e) => handleInput(e.target.value)}
         onFocus={() => { setIsOpen(true); setQuery(""); }}
-        className="w-full bg-white/10 border border-white/[0.6] text-white text-sm rounded-full py-2.5 px-5 outline-none focus:border-white/80 focus:bg-white/15 transition-colors placeholder:text-white/50 backdrop-blur-sm"
+        className="w-full bg-white/10 border border-white/[0.6] text-white text-sm rounded-full py-2.5 px-5 pr-10 outline-none focus:border-white/80 focus:bg-white/15 transition-colors placeholder:text-white/50 backdrop-blur-sm text-ellipsis"
       />
 
       {/* Search icon */}
