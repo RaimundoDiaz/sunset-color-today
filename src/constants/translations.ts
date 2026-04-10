@@ -1,7 +1,7 @@
 export type Locale = "en" | "es" | "pt" | "fr" | "de" | "it" | "ja";
 
 export const LOCALE_LABELS: Record<Locale, string> = {
-  en: "\uD83C\uDDFA\uD83C\uDDF8 EN",
+  en: "\uD83C\uDDEC\uD83C\uDDE7 EN",
   es: "\uD83C\uDDEA\uD83C\uDDF8 ES",
   pt: "\uD83C\uDDE7\uD83C\uDDF7 PT",
   fr: "\uD83C\uDDEB\uD83C\uDDF7 FR",
