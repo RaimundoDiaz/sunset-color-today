@@ -76,6 +76,9 @@ const WMO: Record<string, Record<number, string>> = {
 const FALLBACK: Record<string, string> = {
   en: "Precipitation", es: "Precipitaci\u00F3n", pt: "Precipita\u00E7\u00E3o",
   fr: "Pr\u00E9cipitations", de: "Niederschlag", it: "Precipitazioni", ja: "\u964D\u6C34",
+  zh: "\u964D\u6C34", ko: "\uAC15\uC218", ru: "\u041E\u0441\u0430\u0434\u043A\u0438",
+  ar: "\u0647\u0637\u0648\u0644", hi: "\u0935\u0930\u094D\u0937\u093E", tr: "Ya\u011F\u0131\u015F",
+  nl: "Neerslag", pl: "Opady",
 };
 
 export const RAIN_CODES = [45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99] as const;

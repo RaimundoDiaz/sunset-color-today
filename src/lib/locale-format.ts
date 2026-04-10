@@ -8,6 +8,14 @@ const BCP47: Record<Locale, string> = {
   de: "de-DE",
   it: "it-IT",
   ja: "ja-JP",
+  zh: "zh-CN",
+  ko: "ko-KR",
+  ru: "ru-RU",
+  ar: "ar-SA",
+  hi: "hi-IN",
+  tr: "tr-TR",
+  nl: "nl-NL",
+  pl: "pl-PL",
 };
 
 /** BCP 47 tag for `Intl` date/time formatting from the active UI locale */
