@@ -1,13 +1,13 @@
 export type Locale = "en" | "es" | "pt" | "fr" | "de" | "it" | "ja";
 
 export const LOCALE_LABELS: Record<Locale, string> = {
-  en: "EN",
-  es: "ES",
-  pt: "PT",
-  fr: "FR",
-  de: "DE",
-  it: "IT",
-  ja: "JA",
+  en: "\uD83C\uDDFA\uD83C\uDDF8 EN",
+  es: "\uD83C\uDDEA\uD83C\uDDF8 ES",
+  pt: "\uD83C\uDDE7\uD83C\uDDF7 PT",
+  fr: "\uD83C\uDDEB\uD83C\uDDF7 FR",
+  de: "\uD83C\uDDE9\uD83C\uDDEA DE",
+  it: "\uD83C\uDDEE\uD83C\uDDF9 IT",
+  ja: "\uD83C\uDDEF\uD83C\uDDF5 JA",
 };
 
 export const LOCALES = Object.keys(LOCALE_LABELS) as Locale[];
