@@ -26,7 +26,7 @@ interface CardData {
 
 function WidgetCard({ icon, value, label }: CardData) {
   return (
-    <div className="bg-white/10 border border-white/[0.6] rounded-[20px] p-3 w-[120px] flex flex-col gap-3">
+    <div className="bg-white/10 border-[0.5px] border-white/60 rounded-[20px] p-3 w-[120px] flex flex-col gap-3">
       <div className="h-[26px] flex items-center">{icon}</div>
       <div className="flex flex-col tracking-[-0.4px]">
         <span className="text-[14px] font-semibold text-white leading-[21px]">{value}</span>

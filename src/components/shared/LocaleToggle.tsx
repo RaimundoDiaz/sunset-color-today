@@ -24,17 +24,16 @@ export function LocaleToggle() {
     setOpen(false);
   };
 
+  const code = locale.toUpperCase();
+
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 rounded-full border border-white/20 px-[8px] py-[2px] text-[9px] font-medium tracking-wider text-white/70 transition-colors hover:border-white/40 hover:text-white"
+        className="flex items-center justify-center rounded-full border-[0.5px] border-white/60 w-[40px] h-[18px] text-[10px] font-medium text-white transition-colors hover:bg-white/10"
         aria-label="Switch language"
       >
-        {LOCALE_LABELS[locale]}
-        <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}>
-          <path d="M3 5l3 3 3-3" />
-        </svg>
+        {code}
       </button>
 
       <AnimatePresence>
@@ -44,13 +43,13 @@ export function LocaleToggle() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full left-0 mb-1 flex flex-col rounded-lg border border-white/15 bg-black/60 backdrop-blur-xl overflow-hidden z-50"
+            className="absolute bottom-full left-0 mb-1 flex flex-col rounded-lg border border-white/15 bg-black/60 backdrop-blur-xl overflow-hidden z-50 max-h-[240px] overflow-y-auto"
           >
             {LOCALES.map((l) => (
               <button
                 key={l}
                 onClick={() => pick(l)}
-                className={`px-3 py-[5px] text-[9px] font-medium tracking-wider text-left transition-colors
+                className={`px-3 py-[5px] text-[9px] font-medium tracking-wider text-left transition-colors whitespace-nowrap
                   ${l === locale ? "text-white bg-white/15" : "text-white/50 hover:text-white hover:bg-white/10"}`}
               >
                 {LOCALE_LABELS[l]}

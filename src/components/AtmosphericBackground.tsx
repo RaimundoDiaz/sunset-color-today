@@ -75,7 +75,10 @@ const T = {
   duration: 22,
   repeat: Infinity,
   ease: "easeInOut" as const,
-  times: [0, 0.28, 0.56, 0.84, 1],
+  // Last segment compressed (0.94→1 = 1.32s) so the visible loop-back from
+  // phase 3 to phase 0 happens fast, hiding the backward motion of the sun
+  // and slider handle behind the opacity fade.
+  times: [0, 0.28, 0.56, 0.94, 1],
 };
 
 /* ------------------------------------------------------------------ */

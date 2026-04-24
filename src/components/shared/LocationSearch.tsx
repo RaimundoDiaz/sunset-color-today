@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { Search } from "lucide-react";
 import { useSunsetStore, type LocationData } from "@/store/useSunsetStore";
 import { t } from "@/constants/translations";
 
@@ -49,7 +50,6 @@ export function LocationSearch() {
 
   const handleInput = (value: string) => {
     setQuery(value);
-    setIsOpen(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => search(value), 250);
   };
@@ -70,7 +70,14 @@ export function LocationSearch() {
     inputRef.current?.blur();
   };
 
-  // Close dropdown on outside click
+  const openSearch = () => {
+    setIsOpen(true);
+    setQuery("");
+    // Focus input on next tick after it mounts
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -82,37 +89,41 @@ export function LocationSearch() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative mb-4">
-      <input
-        ref={inputRef}
-        type="text"
-        value={isOpen ? query : ""}
-        placeholder={displayName}
-        onChange={(e) => handleInput(e.target.value)}
-        onFocus={() => { setIsOpen(true); setQuery(""); }}
-        className="w-full bg-white/10 border border-white/[0.6] text-white text-sm rounded-full py-2.5 px-5 pr-10 outline-none focus:border-white/80 focus:bg-white/15 transition-colors placeholder:text-white/50 backdrop-blur-sm text-ellipsis"
-      />
+    <div ref={containerRef} className="relative w-full">
+      {/* Pill: collapsed (button) or expanded (input) */}
+      <div className="flex items-center gap-1 bg-white/10 border-[0.5px] border-white/60 rounded-full p-1 w-full h-8 overflow-hidden">
+        {/* Icon box — magnifying glass */}
+        <div className="flex items-center justify-center shrink-0 w-[22.627px] h-[22.627px]">
+          <Search size={14} strokeWidth={2} className="text-white" />
+        </div>
 
-      {/* Search icon */}
-      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/40">
-        {isSearching ? (
-          <div className="w-4 h-4 border-2 border-white/15 border-t-white/50 rounded-full animate-spin" />
+        {isOpen ? (
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            placeholder={displayName}
+            onChange={(e) => handleInput(e.target.value)}
+            className="flex-1 min-w-0 bg-transparent text-white text-[14px] md:text-[14px] font-medium tracking-[-0.4px] outline-none placeholder:text-white/70"
+          />
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35" />
-          </svg>
+          <button
+            onClick={openSearch}
+            className="flex-1 text-left text-white text-[12px] md:text-[14px] font-medium tracking-[-0.4px] truncate pr-2"
+          >
+            {displayName}
+          </button>
+        )}
+
+        {isSearching && (
+          <div className="shrink-0 mr-2 w-3 h-3 border-[1.5px] border-white/15 border-t-white/70 rounded-full animate-spin" />
         )}
       </div>
 
       {/* Results dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-black/70 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg overflow-hidden z-50 max-h-[280px] overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-black/60 backdrop-blur-xl rounded-2xl border border-white/15 shadow-lg overflow-hidden z-50 max-h-[280px] overflow-y-auto">
           {results.map((r) => {
-            const parts = [r.name];
-            if (r.admin1) parts.push(r.admin1);
-            parts.push(r.country);
-            const label = parts.join(", ");
             const pop = r.population
               ? r.population > 1_000_000
                 ? `${(r.population / 1_000_000).toFixed(1)}M`
@@ -127,9 +138,9 @@ export function LocationSearch() {
                 onClick={() => handleSelect(r)}
                 className="w-full text-left px-4 py-2.5 hover:bg-white/10 transition-colors flex items-center justify-between gap-2"
               >
-                <div>
-                  <div className="text-sm text-white/90 font-medium">{r.name}</div>
-                  <div className="text-[11px] text-white/40">
+                <div className="min-w-0">
+                  <div className="text-sm text-white/90 font-medium truncate">{r.name}</div>
+                  <div className="text-[11px] text-white/40 truncate">
                     {r.admin1 ? `${r.admin1}, ` : ""}{r.country}
                   </div>
                 </div>
@@ -143,7 +154,7 @@ export function LocationSearch() {
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && !isSearching && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-black/70 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg p-4 z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-black/60 backdrop-blur-xl rounded-2xl border border-white/15 shadow-lg p-4 z-50">
           <p className="text-sm text-white/40 text-center">
             {t(locale, "noResults")}
           </p>

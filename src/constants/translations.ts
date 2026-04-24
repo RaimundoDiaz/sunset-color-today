@@ -54,6 +54,18 @@ export const translations: Record<Locale, Record<string, string>> = {
     seeShapes: "See what shapes this sunset \u2192",
     hideDetails: "Hide details",
 
+    // Color names (sunset palette)
+    colorCrimson: "Crimson",
+    colorRed: "Red",
+    colorOrange: "Orange",
+    colorAmber: "Amber",
+    colorGold: "Gold",
+    colorYellow: "Yellow",
+    colorMagenta: "Magenta",
+    colorPink: "Pink",
+    colorViolet: "Violet",
+    colorMuted: "Muted",
+
     // Weather cards
     temperature: "Temperature",
     humidity: "Humidity",
@@ -169,6 +181,17 @@ export const translations: Record<Locale, Record<string, string>> = {
     peakColor: "Color pico",
     seeShapes: "Ver qu\u00E9 forma este atardecer \u2192",
     hideDetails: "Ocultar detalles",
+
+    colorCrimson: "Carmesí",
+    colorRed: "Rojo",
+    colorOrange: "Naranja",
+    colorAmber: "Ámbar",
+    colorGold: "Dorado",
+    colorYellow: "Amarillo",
+    colorMagenta: "Magenta",
+    colorPink: "Rosa",
+    colorViolet: "Violeta",
+    colorMuted: "Apagado",
 
     temperature: "Temperatura",
     humidity: "Humedad",

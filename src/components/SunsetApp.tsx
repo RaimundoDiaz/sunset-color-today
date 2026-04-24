@@ -9,6 +9,7 @@ import { useSunsetPrediction } from "@/hooks/useSunsetPrediction";
 import { useLiveSky } from "@/hooks/useLiveSky";
 import { useT } from "@/hooks/useTranslation";
 import { dateTimeLocale } from "@/lib/locale-format";
+import { colorNameKey } from "@/lib/color-name";
 import { AtmosphericBackground } from "./AtmosphericBackground";
 import { TimelineSlider } from "./TimelineSlider";
 import { WeatherWidget, MobileWeatherWidget } from "./WeatherWidget";
@@ -82,20 +83,48 @@ export function SunsetApp() {
     minute: "2-digit",
   });
 
-  const peakEndTime = useMemo(() => {
+  /**
+   * Peak light window: sun between +2° and −4° (≈ 8 min before to 16 min after sunset).
+   * This is the "magic hour" window where atmospheric scattering produces peak saturation
+   * (Minnaert 1954; intensity of crepuscular red maxes at sun ≈ −2.5°).
+   */
+  const peakLightRange = useMemo(() => {
+    if (!prediction) return { start: "--:--", end: "--:--" };
+    const sunset = new Date(prediction.weatherData.sunsetTime);
+    const start = new Date(sunset.getTime() - 8 * 60000);
+    const end = new Date(sunset.getTime() + 16 * 60000);
+    const fmt = (d: Date) =>
+      d.toLocaleTimeString(dateTimeLocale(locale), { hour: "2-digit", minute: "2-digit", hour12: false });
+    return { start: fmt(start), end: fmt(end) };
+  }, [prediction, locale]);
+
+  /**
+   * Peak color timestamp: sunset + (−elevation * 4 min).
+   * Sun descends ~0.25°/min near horizon; peak is the most saturated stop in the timeline.
+   */
+  const peakTime = useMemo(() => {
     if (!prediction) return "--:--";
-    const d = new Date(prediction.weatherData.sunsetTime);
-    d.setMinutes(d.getMinutes() + 20);
+    const sunset = new Date(prediction.weatherData.sunsetTime);
+    const offsetMin = -prediction.peak.elevation * 4;
+    const d = new Date(sunset.getTime() + offsetMin * 60000);
     return d.toLocaleTimeString(dateTimeLocale(locale), { hour: "2-digit", minute: "2-digit", hour12: false });
   }, [prediction, locale]);
+
+  const peakColorName = prediction
+    ? t(colorNameKey(prediction.peak.h, prediction.peak.s, prediction.peak.l))
+    : "";
 
   const defaultTimeline = [{ elevation: 0, r: 200, g: 150, b: 100, hex: "#C89664", h: 30, s: 40, l: 60 }];
   const defaultPeak = defaultTimeline[0];
 
   return (
     <div className="min-h-dvh relative overflow-hidden">
-      {/* Layer 0: Animated atmospheric background */}
+      {/* Layer 0: Animated atmospheric background.
+          Keyed on prediction readiness so its 22s animation cycle remounts
+          at the same frame as TimelineSlider — keeps the sun's position and
+          the slider's handle in lockstep. */}
       <AtmosphericBackground
+        key={prediction ? "live" : "loading"}
         timeline={prediction?.timeline ?? defaultTimeline}
         peak={prediction?.peak ?? defaultPeak}
         quality={prediction?.weatherData.quality ?? 50}
@@ -138,7 +167,7 @@ export function SunsetApp() {
               </p>
               {prediction && (
                 <p>
-                  {t("peakLight")} {sunsetTime} — {peakEndTime}
+                  {t("peakLight")} {peakLightRange.start} — {peakLightRange.end}
                 </p>
               )}
             </motion.div>
@@ -150,13 +179,18 @@ export function SunsetApp() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
-                <p className="text-[12px] text-white tracking-[-0.4px]">{t("peakColor")}</p>
-                <div className="flex items-center gap-2">
+                <p className="text-[12px] text-white tracking-[-0.4px] font-light">
+                  {t("peakColor")} {peakTime}
+                </p>
+                <div className="flex items-center gap-[6px]">
                   <div
-                    className="w-[30px] h-[30px] rounded-full shrink-0"
+                    className="w-[27px] h-[27px] rounded-full shrink-0"
                     style={{ backgroundColor: prediction.peak.hex }}
                   />
-                  <span className="text-[14px] font-semibold text-white">{prediction.peak.hex}</span>
+                  <div className="flex items-center gap-1 text-[14px] text-white">
+                    <span className="font-semibold">{peakColorName}</span>
+                    <span className="font-light">{prediction.peak.hex}</span>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -249,7 +283,7 @@ export function SunsetApp() {
             </p>
             {prediction && (
               <p>
-                {t("peakLight")} {sunsetTime} — {peakEndTime}
+                {t("peakLight")} {peakLightRange.start} — {peakLightRange.end}
               </p>
             )}
           </motion.div>
@@ -261,13 +295,18 @@ export function SunsetApp() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <p className="text-[12px] text-white tracking-[-0.4px]">{t("peakColor")}</p>
-              <div className="flex items-center gap-2">
+              <p className="text-[14px] text-white tracking-[-0.4px] font-light">
+                {t("peakColor")} {peakTime}
+              </p>
+              <div className="flex items-center gap-[6px]">
                 <div
-                  className="w-[30px] h-[30px] rounded-full shrink-0"
+                  className="w-[27px] h-[27px] rounded-full shrink-0"
                   style={{ backgroundColor: prediction.peak.hex }}
                 />
-                <span className="text-[14px] font-semibold text-white">{prediction.peak.hex}</span>
+                <div className="flex items-center gap-1 text-[14px] text-white">
+                  <span className="font-semibold">{peakColorName}</span>
+                  <span className="font-light">{prediction.peak.hex}</span>
+                </div>
               </div>
             </motion.div>
           )}
@@ -310,11 +349,11 @@ export function SunsetApp() {
         </motion.div>
       </div>
 
-      {/* Layer 2: Desktop weather widget — top right */}
+      {/* Layer 2: Desktop weather widget — top right, aligned with hero title at 60px */}
       <AnimatePresence>
         {showWeatherDetail && isReady && prediction && (
           <motion.div
-            className="absolute top-10 right-10 z-10 hidden md:block"
+            className="absolute top-[60px] right-[40px] z-10 hidden md:block"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
@@ -339,6 +378,7 @@ export function SunsetApp() {
         <TimelineSlider
           timeline={prediction.timeline}
           sunsetTime={prediction.weatherData.sunsetTime}
+          peak={prediction.peak}
         />
       )}
     </div>
