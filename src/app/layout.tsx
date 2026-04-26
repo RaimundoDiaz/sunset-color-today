@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Sunset — Today's Sunset Color",
     description:
       "Predict today's sunset color with real atmospheric physics. 28 cities live.",
