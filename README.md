@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="public/icon.svg" alt="Sunset" width="96" />
+<a href="https://www.sunsetcolor.today">
+  <img src="https://www.sunsetcolor.today/opengraph-image" alt="Sunset — Today's sunset color, predicted from real atmospheric physics" width="720" />
+</a>
 
 # Sunset
 
@@ -9,6 +11,8 @@
 <a href="https://www.sunsetcolor.today">
   <strong>🌅 sunsetcolor.today</strong>
 </a>
+
+<sub>↑ that hero image is generated daily by the same spectral model as the app — different color every day.</sub>
 
 <p>
   <a href="https://www.sunsetcolor.today"><img src="https://img.shields.io/badge/live-sunsetcolor.today-e8452c?style=flat-square" alt="Live" /></a>
