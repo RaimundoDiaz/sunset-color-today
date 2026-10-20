@@ -45,13 +45,16 @@ The core is a **wavelength-resolved transmission model** that simulates sunlight
 
 The transmitted spectrum is converted to on-screen color through **CIE 1931 color-matching functions** → sRGB. On top of the spectral core, weather heuristics blend in cloud-layer effects ("high clouds as a canvas" vs. "overcast washing colors out") and humidity-driven hygroscopic growth of aerosols.
 
+Clouds are also sampled **50 / 150 / 300 km along the sunset azimuth**, not just overhead. If the sky is overcast above you but the horizon toward the sun is open, the low sun lights the cloud bases from below — the vivid red "fire sky" a single-point forecast misses. In that case overhead clouds are treated as a screen to be lit rather than a blocker.
+
 Long-form derivation lives in [`SUNSET_COLOR_SCIENCE.md`](https://github.com/RaimundoDiaz/sunset-color-today/blob/main/SUNSET_COLOR_SCIENCE.md) (workspace-level).
 
 ## 🎯 Features
 
 - 🎨 **Today's sunset color** — predicted from current weather and atmosphere, not a fixed palette
 - 🌤️ **Live sky** — current sky color follows solar elevation in real time
-- 🌍 **28 cities worldwide** — pre-loaded global locations
+- 📍 **Your sunset by default** — city detected from your IP (no permission prompt); a locate button gives GPS precision on request; your choice is remembered
+- 🌍 **Search any city** — geocoded worldwide
 - 📊 **Atmospheric panel** — see the inputs the model is using (cloud layers, AOD, ozone, water vapor)
 - 🎬 **Synced animation** — atmospheric background + 22 s timeline slider, perfectly aligned at the loop boundary
 - 🌐 **English & Spanish** — auto-detected from the browser
@@ -73,7 +76,8 @@ Long-form derivation lives in [`SUNSET_COLOR_SCIENCE.md`](https://github.com/Rai
 
 All public APIs, no client-side keys required:
 
-- **[Open-Meteo](https://open-meteo.com)** — weather, clouds, visibility, radiation
+- **[Open-Meteo](https://open-meteo.com)** — weather, clouds, visibility, radiation (at the observer and along the sunset direction)
+- **Vercel IP geolocation headers** — approximate visitor city for the default location
 - **[Open-Meteo Air Quality](https://open-meteo.com/en/docs/air-quality-api)** — AOD and aerosol-related pollutants
 - **[NASA POWER](https://power.larc.nasa.gov)** — column ozone and water vapor (with fallback estimates)
 - **[ECMWF via Open-Meteo](https://open-meteo.com/en/docs/ecmwf-api)** — finer water vapor (optional)
@@ -126,6 +130,8 @@ sunset-color-today/
 │  │  ├─ solar.ts              # solar elevation + Kasten-Young air mass
 │  │  ├─ sunset-timeline.ts    # 12-stop elevation timeline + peak picker
 │  │  ├─ sunset-color.ts       # top-level orchestrator with weather heuristics
+│  │  ├─ horizon.ts            # sunset azimuth + cloud sampling along the sun's path
+│  │  ├─ quality.ts            # 0–100 sunset quality score
 │  │  └─ live-sky.ts           # current sky color from current solar elevation
 │  ├─ api/fetchers.ts          # client-side fetchers
 │  └─ constants/translations.ts # EN / ES dictionaries
