@@ -71,3 +71,26 @@ describe("calculateQuality", () => {
     expect(clear).toBeGreaterThan(hazy);
   });
 });
+
+describe("calculateQuality with horizon data", () => {
+  const storm = {
+    ...base,
+    cloudLow: 100,
+    totalCloud: 100,
+    cloudHigh: 50,
+    humidity: 90,
+    visKm: 3,
+    isRaining: true,
+    weatherCode: 80,
+  };
+
+  it("an open horizon under a local storm scores well above a blocked one", () => {
+    const blocked = calculateQuality({ ...storm, horizonGap: 0, underlit: 0 });
+    const open = calculateQuality({ ...storm, horizonGap: 0.8, underlit: 0.8 });
+    expect(open).toBeGreaterThan(blocked + 30);
+  });
+
+  it("without horizon data behaves as before", () => {
+    expect(calculateQuality({ ...storm, horizonGap: null })).toBe(calculateQuality(storm));
+  });
+});

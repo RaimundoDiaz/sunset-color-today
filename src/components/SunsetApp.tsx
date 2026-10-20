@@ -53,10 +53,10 @@ export function SunsetApp() {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const { weather, air, power, ecmwf, isLoading, isError, warnings } =
+  const { weather, air, power, ecmwf, horizon, isLoading, isError, warnings } =
     useWeatherQueries(location);
 
-  const prediction = useSunsetPrediction(weather, air, power, ecmwf, location.lat, location.lon);
+  const prediction = useSunsetPrediction(weather, air, power, ecmwf, horizon, location.lat, location.lon);
 
   // Keep live sky hook running (used later when live tab returns)
   useLiveSky(

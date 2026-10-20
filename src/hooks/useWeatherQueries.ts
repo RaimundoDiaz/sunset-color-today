@@ -8,6 +8,7 @@ import {
   fetchAirQuality,
   fetchNasaPower,
   fetchEcmwf,
+  fetchHorizon,
 } from "@/api/fetchers";
 
 // Query key uses lat/lon rounded to 2 decimals to avoid unnecessary refetches
@@ -20,7 +21,7 @@ export function useWeatherQueries(loc: LocationData) {
   // Hold off until we know whose sunset to show (saved / IP / default)
   const enabled = useSunsetStore((s) => s.locationReady);
 
-  const [weatherQ, airQ, powerQ, ecmwfQ] = useQueries({
+  const [weatherQ, airQ, powerQ, ecmwfQ, horizonQ] = useQueries({
     queries: [
       {
         queryKey: ["weather", "forecast", k],
@@ -49,6 +50,13 @@ export function useWeatherQueries(loc: LocationData) {
         staleTime: 10 * 60 * 1000,
         retry: 1,
       },
+      {
+        queryKey: ["weather", "horizon", k],
+        queryFn: () => fetchHorizon(loc.lat, loc.lon, loc.tz),
+        enabled,
+        staleTime: 10 * 60 * 1000,
+        retry: 1,
+      },
     ],
   });
 
@@ -63,6 +71,7 @@ export function useWeatherQueries(loc: LocationData) {
     air: airQ.data ?? null,
     power: powerQ.data ?? null,
     ecmwf: ecmwfQ.data ?? null,
+    horizon: horizonQ.data ?? null,
     isLoading: !enabled || weatherQ.isLoading,
     isError: weatherQ.isError,
     error: weatherQ.error,

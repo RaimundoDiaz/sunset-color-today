@@ -4,6 +4,7 @@ import { clamp, hslToRgb, rgbToHex, rgbToHSL } from "./color-utils";
 import { spectrumToRGB } from "./spectral-model";
 import { computeScatteredSpectrum } from "./sky-scattering";
 import { buildSunsetTimeline, type SunsetTimelineResult } from "./sunset-timeline";
+import { horizonGap, type HorizonSample } from "./horizon";
 import { estimateAngstrom, estimateOzoneDU, hygroscopicGrowth } from "./atmosphere";
 import { calculateQuality } from "./quality";
 import { getSunsetHourIndex, airAtSunset, extractPowerOzone, extractPowerWaterVapor } from "@/api/extract";
@@ -15,6 +16,7 @@ export function calculateSunsetColor(
   air: any | null,
   power: any | null,
   ecmwf: any | null,
+  horizon: any | null,
   lat: number,
   lon: number,
   locale: Locale = "en",
@@ -42,6 +44,22 @@ export function calculateSunsetColor(
   const diffuseRad  = hourly.diffuse_radiation?.[preIdx] ?? null;
   const aq = airAtSunset(air, idx);
   const factors: string[] = [];
+  const isRaining = RAIN_CODES.includes(weatherCode as typeof RAIN_CODES[number]);
+  const isFog = weatherCode === 45 || weatherCode === 48;
+  // Convective codes: cells with gaps between them, unlike steady rain
+  const isShowers = weatherCode >= 80;
+
+  // Open fraction of the sunset path (null when horizon data is unavailable)
+  const horizonSamples: HorizonSample[] | null = Array.isArray(horizon)
+    ? horizon.map((p: any) => ({
+        cloudLow: p?.hourly?.cloud_cover_low?.[idx],
+        cloudMid: p?.hourly?.cloud_cover_mid?.[idx],
+        weatherCode: p?.hourly?.weather_code?.[idx],
+      }))
+    : null;
+  const gap = horizonSamples?.every((p) => [p.cloudLow, p.cloudMid, p.weatherCode].every(Number.isFinite))
+    ? horizonGap(horizonSamples)
+    : null;
 
   // ── 2. Atmospheric parameters ──
   const rawAngstrom = estimateAngstrom(aq.pm25, aq.pm10);
@@ -51,10 +69,12 @@ export function calculateSunsetColor(
   let effectiveAngstrom = rawAngstrom * (1 - 0.4 * rhN * rhN);
   const visKm = visibility / 1000;
 
-  if (visKm > 0 && visKm < 50) {
+  // In rain, low visibility is the precipitation itself, not aerosol
+  if (visKm > 0 && visKm < 50 && !isRaining) {
     effectiveAOD = Math.max(effectiveAOD, (3.912 / visKm) * 0.8 * 0.12);
   }
-  if (directRad !== null && diffuseRad !== null && (directRad + diffuseRad) > 50) {
+  // A high diffuse fraction under overcast comes from cloud, not aerosol
+  if (directRad !== null && diffuseRad !== null && (directRad + diffuseRad) > 50 && totalCloud < 60) {
     const dr = diffuseRad / (directRad + diffuseRad);
     if (dr > 0.65) {
       const hb = (dr - 0.65) / 0.35;
@@ -94,35 +114,51 @@ export function calculateSunsetColor(
 
   // ── 3. Can the observer actually SEE the sunset? ──
   // This determines if scattering colors reach the eyes or if everything is gray.
-  const isRaining = RAIN_CODES.includes(weatherCode as typeof RAIN_CODES[number]);
 
   // Sunset visibility score: 0 = invisible (gray), 1 = fully visible (vivid)
   let sunsetVisibility = 1.0;
+  // How strongly clouds overhead get lit from below (0 = no effect, 1 = full "fire sky")
+  let underlit = 0;
 
-  // Rain/fog = can't see sunset at all
-  if (isRaining) sunsetVisibility = 0;
+  if (gap !== null) {
+    // With horizon data, overhead clouds aren't blockers — they're the screen.
+    // What matters is whether the low sun's beam can reach them.
+    sunsetVisibility = gap;
+    if (isFog) sunsetVisibility = 0;
+    else if (isRaining) sunsetVisibility *= isShowers ? 0.85 : 0.4;
+    underlit = gap * clamp((totalCloud - 20) / 50, 0, 1);
+  } else {
+    // Point forecast only: assume local cloud stands in for the horizon
+    if (isRaining) sunsetVisibility = 0;
 
-  // Low clouds block the horizon (most important blocker)
-  if (cloudLow > 20) sunsetVisibility *= clamp(1 - (cloudLow - 20) / 50, 0, 1);
+    // Low clouds block the horizon (most important blocker)
+    if (cloudLow > 20) sunsetVisibility *= clamp(1 - (cloudLow - 20) / 50, 0, 1);
 
-  // Heavy total overcast dims everything
-  if (totalCloud > 70) sunsetVisibility *= clamp(1 - (totalCloud - 70) / 25, 0.05, 1);
+    // Heavy total overcast dims everything
+    if (totalCloud > 70) sunsetVisibility *= clamp(1 - (totalCloud - 70) / 25, 0.05, 1);
+  }
 
-  // Very low visibility = can't see far enough
-  if (visKm < 8) sunsetVisibility *= clamp(visKm / 8, 0.1, 1);
+  let atmosphere = 1.0;
+
+  // Very low visibility = can't see far enough (in rain this is already counted above)
+  if (visKm < 8 && !isRaining) atmosphere *= clamp(visKm / 8, 0.1, 1);
 
   // Heavy aerosols make sunset brownish/gray even without clouds
-  if (effectiveAOD > 0.3) sunsetVisibility *= clamp(1 - (effectiveAOD - 0.3) / 0.7, 0.15, 1);
+  if (effectiveAOD > 0.3) atmosphere *= clamp(1 - (effectiveAOD - 0.3) / 0.7, 0.15, 1);
 
   // High humidity washes out colors significantly
-  if (humidity > 65) sunsetVisibility *= clamp(1 - (humidity - 65) / 35, 0.3, 1);
+  if (humidity > 65) atmosphere *= clamp(1 - (humidity - 65) / 35, 0.3, 1);
 
-  sunsetVisibility = clamp(sunsetVisibility, 0, 1);
+  // Under-lit clouds take their color from the beam through the open horizon,
+  // so local haze and humidity matter less
+  atmosphere += (1 - atmosphere) * 0.7 * underlit;
+
+  sunsetVisibility = clamp(sunsetVisibility * atmosphere, 0, 1);
 
   // ── 3b. Quality score (computed early to enforce consistency) ──
   const quality = calculateQuality({
     effectiveAOD, cloudHigh, cloudLow, totalCloud, humidity,
-    visKm, isRaining, weatherCode, aod: aq.aod,
+    visKm, isRaining, weatherCode, aod: aq.aod, horizonGap: gap, underlit,
   });
 
   // Quality and visibility MUST be consistent:
@@ -234,7 +270,8 @@ export function calculateSunsetColor(
   }
 
   // Cloud details
-  if (cloudLow > 40) factors.push(tr(locale, "factorLowCloudsHorizon", { pct: cloudLow }));
+  if (underlit > 0.3) factors.push(tr(locale, "factorUnderlit", { pct: Math.round(gap! * 100) }));
+  else if (cloudLow > 40 && (gap === null || gap < 0.5)) factors.push(tr(locale, "factorLowCloudsHorizon", { pct: cloudLow }));
   if (totalCloud > 80) factors.push(tr(locale, "factorHeavyCloudCover", { pct: totalCloud }));
   else if (cloudHigh >= 30 && cloudHigh <= 70 && cloudLow < 20) {
     factors.push(tr(locale, "factorHighCloudsIdeal", { pct: cloudHigh }));
@@ -245,6 +282,12 @@ export function calculateSunsetColor(
     const fx = Math.min(cloudHigh / 40, 1) * (1 - Math.max(0, (cloudHigh - 70)) / 30);
     s = clamp(s + fx * 10, 5, 100);
     h -= fx * 4;
+  }
+
+  // Clouds lit from below by the reddened direct beam
+  if (underlit > 0.3) {
+    s = clamp(s + underlit * 15, 5, 100);
+    h -= underlit * 8;
   }
 
   // Temperature

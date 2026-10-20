@@ -10,12 +10,13 @@ export function useSunsetPrediction(
   air: unknown | null,
   power: unknown | null,
   ecmwf: unknown | null,
+  horizon: unknown | null,
   lat: number,
   lon: number,
 ): SunsetResult | null {
   const locale = useSunsetStore((s) => s.locale);
   return useMemo(() => {
     if (!weather) return null;
-    return calculateSunsetColor(weather, air, power, ecmwf, lat, lon, locale);
-  }, [weather, air, power, ecmwf, lat, lon, locale]);
+    return calculateSunsetColor(weather, air, power, ecmwf, horizon, lat, lon, locale);
+  }, [weather, air, power, ecmwf, horizon, lat, lon, locale]);
 }
