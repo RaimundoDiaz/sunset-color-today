@@ -1,11 +1,15 @@
 import type { AirAtSunset } from "@/types";
 
+/** Index of the hourly forecast slot closest to sunset (19:55 → 20:00, not 19:00). */
 export function getSunsetHourIndex(hourlyTimes: string[], sunsetIso: string): number {
-  const sunsetHour = new Date(sunsetIso).getHours();
+  const sunset = new Date(sunsetIso).getTime();
+  let best = 0;
+  let bestDiff = Infinity;
   for (let i = 0; i < hourlyTimes.length; i++) {
-    if (new Date(hourlyTimes[i]).getHours() === sunsetHour) return i;
+    const diff = Math.abs(new Date(hourlyTimes[i]).getTime() - sunset);
+    if (diff < bestDiff) { bestDiff = diff; best = i; }
   }
-  return Math.min(sunsetHour, hourlyTimes.length - 1);
+  return best;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

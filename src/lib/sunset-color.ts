@@ -170,13 +170,9 @@ export function calculateSunsetColor(
   const grayH = 220, grayS = 8, grayL = 45;
   const v = sunsetVisibility;
 
-  let h = v > 0.05 ? idealH * v + grayH * (1 - v) : grayH;
-  // Handle hue wrapping for blend
-  if (Math.abs(idealH - grayH) > 180 && v > 0.05) {
-    const adjIdeal = idealH < 180 ? idealH + 360 : idealH;
-    h = adjIdeal * v + grayH * (1 - v);
-    h = ((h % 360) + 360) % 360;
-  }
+  // Keep the sunset hue and fade only saturation/lightness toward gray.
+  // Interpolating hue toward 220 rotated reds through magenta (red → pink → violet).
+  let h = v > 0.05 ? idealH : grayH;
   let s = idealS * v + grayS * (1 - v);
   let l = idealL * v + grayL * (1 - v);
 
