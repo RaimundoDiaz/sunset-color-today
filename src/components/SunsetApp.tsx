@@ -7,6 +7,7 @@ import type { Locale } from "@/constants/translations";
 import { useWeatherQueries } from "@/hooks/useWeatherQueries";
 import { useSunsetPrediction } from "@/hooks/useSunsetPrediction";
 import { useLiveSky } from "@/hooks/useLiveSky";
+import { useAutoLocation } from "@/hooks/useAutoLocation";
 import { useT } from "@/hooks/useTranslation";
 import { dateTimeLocale } from "@/lib/locale-format";
 import { colorNameKey } from "@/lib/color-name";
@@ -45,6 +46,8 @@ export function SunsetApp() {
   useEffect(() => {
     initLocale();
   }, []);
+
+  useAutoLocation();
 
   useEffect(() => {
     document.documentElement.lang = locale;

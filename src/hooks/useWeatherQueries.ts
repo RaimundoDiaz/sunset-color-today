@@ -17,29 +17,35 @@ function locKey(loc: LocationData) {
 
 export function useWeatherQueries(loc: LocationData) {
   const k = locKey(loc);
+  // Hold off until we know whose sunset to show (saved / IP / default)
+  const enabled = useSunsetStore((s) => s.locationReady);
 
   const [weatherQ, airQ, powerQ, ecmwfQ] = useQueries({
     queries: [
       {
         queryKey: ["weather", "forecast", k],
         queryFn: () => fetchWeather(loc.lat, loc.lon, loc.tz),
+        enabled,
         staleTime: 10 * 60 * 1000,
       },
       {
         queryKey: ["weather", "air-quality", k],
         queryFn: () => fetchAirQuality(loc.lat, loc.lon, loc.tz),
+        enabled,
         staleTime: 10 * 60 * 1000,
         retry: 1,
       },
       {
         queryKey: ["weather", "nasa-power", k],
         queryFn: () => fetchNasaPower(loc.lat, loc.lon),
+        enabled,
         staleTime: 60 * 60 * 1000,
         retry: 1,
       },
       {
         queryKey: ["weather", "ecmwf", k],
         queryFn: () => fetchEcmwf(loc.lat, loc.lon, loc.tz),
+        enabled,
         staleTime: 10 * 60 * 1000,
         retry: 1,
       },
@@ -57,7 +63,7 @@ export function useWeatherQueries(loc: LocationData) {
     air: airQ.data ?? null,
     power: powerQ.data ?? null,
     ecmwf: ecmwfQ.data ?? null,
-    isLoading: weatherQ.isLoading,
+    isLoading: !enabled || weatherQ.isLoading,
     isError: weatherQ.isError,
     error: weatherQ.error,
     warnings,

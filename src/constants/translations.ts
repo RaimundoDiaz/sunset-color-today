@@ -113,6 +113,9 @@ export const translations: Record<Locale, Record<string, string>> = {
 
     // Misc
     noResults: "No results found",
+    myLocation: "My location",
+    useMyLocation: "Use my location",
+    locationDenied: "Location access denied",
     estimated: "estimated",
 
     // Errors
@@ -235,6 +238,9 @@ export const translations: Record<Locale, Record<string, string>> = {
     footerModel: "Modelo espectral v2 \u00B7 Rayleigh + Mie + Chappuis + CIE 1931",
 
     noResults: "Sin resultados",
+    myLocation: "Mi ubicaci\u00F3n",
+    useMyLocation: "Usar mi ubicaci\u00F3n",
+    locationDenied: "Acceso a ubicaci\u00F3n denegado",
     estimated: "estimado",
 
     loadingData: "Obteniendo datos...",

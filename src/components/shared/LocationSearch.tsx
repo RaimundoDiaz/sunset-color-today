@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search } from "lucide-react";
+import { Search, LocateFixed } from "lucide-react";
 import { useSunsetStore, type LocationData } from "@/store/useSunsetStore";
 import { t } from "@/constants/translations";
+import { requestGpsLocation } from "@/hooks/useAutoLocation";
 
 interface GeoResult {
   id: number;
@@ -26,13 +27,13 @@ export function LocationSearch() {
   const [results, setResults] = useState<GeoResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [gpsDenied, setGpsDenied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const displayName = location.admin1
-    ? `${location.name}, ${location.admin1}, ${location.country}`
-    : `${location.name}, ${location.country}`;
+  const displayName = [location.name, location.admin1, location.country].filter(Boolean).join(", ");
 
   const search = useCallback(async (q: string) => {
     if (q.length < 2) { setResults([]); return; }
@@ -63,11 +64,24 @@ export function LocationSearch() {
       lon: r.longitude,
       tz: r.timezone,
     };
-    setLocation(loc);
+    setLocation(loc, "search");
     setQuery("");
     setResults([]);
     setIsOpen(false);
     inputRef.current?.blur();
+  };
+
+  const locate = async () => {
+    setIsLocating(true);
+    setGpsDenied(false);
+    try {
+      setLocation(await requestGpsLocation(locale), "gps");
+      setIsOpen(false);
+    } catch {
+      setGpsDenied(true);
+    } finally {
+      setIsLocating(false);
+    }
   };
 
   const openSearch = () => {
@@ -115,8 +129,17 @@ export function LocationSearch() {
           </button>
         )}
 
-        {isSearching && (
+        {isSearching || isLocating ? (
           <div className="shrink-0 mr-2 w-3 h-3 border-[1.5px] border-white/15 border-t-white/70 rounded-full animate-spin" />
+        ) : (
+          <button
+            onClick={locate}
+            aria-label={t(locale, gpsDenied ? "locationDenied" : "useMyLocation")}
+            title={t(locale, gpsDenied ? "locationDenied" : "useMyLocation")}
+            className={`flex items-center justify-center shrink-0 w-[22.627px] h-[22.627px] rounded-full hover:bg-white/15 transition-colors ${gpsDenied ? "opacity-40" : ""}`}
+          >
+            <LocateFixed size={14} strokeWidth={2} className="text-white" />
+          </button>
         )}
       </div>
 
